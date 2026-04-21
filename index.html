@@ -3,132 +3,136 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Autopromover</title><style>
-body {
-    font-family: 'Georgia', serif;
-    margin:0;
-    background:#f8f9fa;
-    color:#1a1a1a;
+:root{
+  --bg:#0b0f1a;
+  --panel:#0f172a;
+  --neon:#22c55e;
+  --neon-2:#38bdf8;
+  --text:#e5e7eb;
+  --muted:#94a3b8;
+}
+
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:radial-gradient(1200px 600px at 50% -10%, #0f172a 0%, var(--bg) 60%);color:var(--text)}
+
+/* HEADER LOGO */
+.header{
+  text-align:center;
+  padding:40px 20px 10px;
+}
+.header img{
+  width:220px;
+  height:220px;
+  object-fit:cover;
+  border-radius:50%;
+  box-shadow:0 0 40px rgba(56,189,248,0.25), 0 0 80px rgba(34,197,94,0.2);
 }
 
 /* NAV */
-.nav {
-    display:flex;
-    justify-content:space-between;
-    padding:15px 40px;
-    background:#0f172a;
-    color:#fff;
+.nav{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:14px 28px;
+  background:rgba(15,23,42,0.7);
+  backdrop-filter: blur(10px);
+  border-bottom:1px solid rgba(56,189,248,0.15);
+  position:sticky;top:0;z-index:10;
 }
-
-.nav a {
-    color:#fff;
-    text-decoration:none;
-    margin-left:20px;
-    font-size:14px;
-}
-
-/* PAGES */
-.page { display:none; }
-.page.active { display:block; }
+.nav a{color:var(--text);text-decoration:none;margin-left:18px;font-size:14px;opacity:.9}
+.nav a:hover{color:var(--neon-2)}
 
 /* HERO */
-.hero {
-    text-align:center;
-    padding:80px 20px;
+.hero{
+  text-align:center;
+  padding:70px 20px 40px;
+}
+.hero h1{
+  font-size:40px;
+  margin:10px 0;
+  letter-spacing:0.5px;
+  background:linear-gradient(90deg,var(--neon-2),var(--neon));
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.hero p{max-width:620px;margin:10px auto;color:var(--muted);line-height:1.6}
+
+.btn{
+  display:inline-block;margin-top:22px;padding:14px 28px;border-radius:10px;
+  border:1px solid rgba(56,189,248,0.4);
+  background:linear-gradient(90deg, rgba(56,189,248,0.15), rgba(34,197,94,0.15));
+  color:var(--text);text-decoration:none;letter-spacing:1px;
+  box-shadow:0 10px 30px rgba(0,0,0,0.4);
+  transition:.25s ease;
+}
+.btn:hover{
+  transform:translateY(-2px);
+  box-shadow:0 14px 40px rgba(56,189,248,0.25);
+  border-color:rgba(34,197,94,0.6);
 }
 
-.hero h1 { font-size:36px; }
-.hero p { max-width:600px; margin:auto; color:#555; }
-
-.btn {
-    display:inline-block;
-    margin-top:20px;
-    padding:14px 30px;
-    border:1px solid #1a1a1a;
-    text-decoration:none;
-    color:#1a1a1a;
-    transition:0.3s;
+/* PANELS */
+.container{
+  max-width:1000px;margin:30px auto;padding:0 16px 40px;
+}
+.card{
+  background:linear-gradient(180deg, rgba(15,23,42,0.8), rgba(15,23,42,0.6));
+  border:1px solid rgba(56,189,248,0.12);
+  border-radius:16px;padding:26px;margin-top:18px;
+  box-shadow:0 20px 60px rgba(0,0,0,0.5);
 }
 
-.btn:hover { background:#1a1a1a; color:#fff; }
+h2{margin:0 0 10px 0;color:#cbd5f5;font-weight:600}
+ul{margin:8px 0 0 18px;color:var(--muted)}
 
-.container {
-    max-width:900px;
-    margin:40px auto;
-    background:#fff;
-    padding:40px;
-    border:1px solid #ddd;
+.steps{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.step{border:1px dashed rgba(56,189,248,0.25);border-radius:12px;padding:14px;color:var(--muted)}
+
+/* CONTACT */
+.contact{ text-align:center }
+.phone a{color:var(--text);text-decoration:none;font-weight:700}
+
+/* FOOTER */
+.footer{margin:30px 0 10px;text-align:center;color:var(--muted);font-size:12px}
+
+/* MOBILE */
+@media(max-width:700px){
+  .hero h1{font-size:30px}
+  .steps{grid-template-columns:1fr}
+  .header img{width:180px;height:180px}
 }
-
-.steps { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
-.step { border:1px solid #ddd; padding:15px; }
-
-.phone a { font-weight:bold; text-decoration:none; color:inherit; }
-
-.footer, .privacy {
-    text-align:center;
-    font-size:12px;
-    margin-top:30px;
-}
-
-.urgency {
-    background:#111;
-    color:#fff;
-    text-align:center;
-    padding:10px;
-    font-size:13px;
-}
-
-.counter {
-    font-weight:bold;
-    color:#b91c1c;
-}
-
-</style></head><body><div class="urgency">
-⚠️ Vagas limitadas: <span class="counter">Restam poucas posições disponíveis</span>
+</style></head><body><!-- LOGO NO TOPO (IMAGEM FORNECIDA) --><div class="header">
+  <img src="file_000000001928720e8e1836080fc5bc2a" alt="Organic HTML Autopromove">
 </div><div class="nav">
-<div><strong>Autopromover</strong></div>
-<div>
-<a href="#" onclick="showPage('home')">Início</a>
-<a href="#" onclick="showPage('como')">Como Funciona</a>
-<a href="#" onclick="showPage('entrar')">Entrar</a>
-</div>
-</div><!-- PAGE 1 --><div id="home" class="page active">
-<div class="hero">
-<h1>Crescimento Orgânico no YouTube</h1>
-<p>Um sistema estruturado para aumentar visualizações, retenção e engajamento real através de colaboração estratégica.</p><a href="#" onclick="showPage('entrar')" class="btn">QUERO PARTICIPAR</a>
-
-</div>
-</div><!-- PAGE 2 --><div id="como" class="page">
-<div class="container">
-<h2>Como Funciona</h2><div class="steps">
-<div class="step">Participação em lives diárias</div>
-<div class="step">Engajamento com comentários estratégicos</div>
-<div class="step">Troca de audiência entre participantes</div>
-<div class="step">Crescimento contínuo e escalável</div>
-</div><br><h2>Regras</h2>
-<ul>
-<li>3 lives por dia</li>
-<li>4 horas cada</li>
-<li>Participação obrigatória por 6 meses</li>
-</ul></div>
-</div><!-- PAGE 3 --><div id="entrar" class="page">
-<div class="container">
-<h2>Entrar no Programa</h2><p>Para participar, entre em contato direto:</p><div class="phone">
-<a href="tel:+13678903119">+1 367 890 3119</a>
-</div><a href="https://wa.me/13678903119?text=Quero%20entrar" target="_blank" class="btn">
-FALAR NO WHATSAPP
-</a><a href="https://wa.me/13678903119?text=Quero%20entrar%20no%20grupo" target="_blank" class="btn">
-ENTRAR NO GRUPO
-</a></div>
-</div><div class="footer">
-Participação sujeita às diretrizes do programa.
-</div><div class="privacy">
-<strong>Privacidade:</strong> Seus dados são protegidos e não compartilhados.
-</div><script>
-function showPage(pageId) {
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    document.getElementById(pageId).classList.add('active');
-    window.scrollTo(0,0);
-}
-</script></body>
+  <div><strong>Autopromover</strong></div>
+  <div>
+    <a href="#home">Início</a>
+    <a href="#metodo">Método</a>
+    <a href="#contato">Entrar</a>
+  </div>
+</div><section id="home" class="hero">
+  <h1>Crescimento Orgânico Inteligente</h1>
+  <p>Impulsione seu canal com um sistema colaborativo de engajamento real, consistência e estratégia focada no algoritmo.</p>
+  <a href="#contato" class="btn">COMEÇAR AGORA</a>
+</section><div class="container">
+  <div id="metodo" class="card">
+    <h2>Como Funciona</h2>
+    <div class="steps">
+      <div class="step">Participação em lives estratégicas</div>
+      <div class="step">Interação com comentários direcionados</div>
+      <div class="step">Engajamento recíproco entre membros</div>
+      <div class="step">Crescimento contínuo do canal</div>
+    </div>
+  </div>  <div class="card">
+    <h2>Regras</h2>
+    <ul>
+      <li>3 lives por dia</li>
+      <li>4 horas por live</li>
+      <li>Compromisso de 6 meses</li>
+    </ul>
+  </div>  <div id="contato" class="card contact">
+    <h2>Entrar Agora</h2>
+    <p class="phone"><a href="tel:+13678903119">+1 367 890 3119</a></p>
+    <a class="btn" href="https://wa.me/13678903119?text=Quero%20participar" target="_blank">FALAR NO WHATSAPP</a>
+    <br>
+    <a class="btn" href="https://wa.me/13678903119?text=Quero%20entrar%20no%20grupo" target="_blank">ENTRAR NO GRUPO</a>
+  </div>  <div class="footer">Privacidade: seus dados não são compartilhados.</div>
+</div></body>
 </html>
