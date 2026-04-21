@@ -122,7 +122,16 @@ canvas{position:fixed;top:0;left:0;z-index:-1}
 </div>
 
 <div class="container">
+<div class="card">
+  <h2>📊 Painel do Sistema</h2>
 
+  <p id="totalUsers">👥 Participantes: ...</p>
+  <p id="totalHoras">⏱️ Horas totais: ...</p>
+
+  <button onclick="toggleRanking()">🏆 Ver Ranking</button>
+
+  <div id="rankingBox" style="display:none; margin-top:15px;"></div>
+</div>
 <div class="card">
  <h2>Resultados Esperados</h2>
 </div>
@@ -196,7 +205,60 @@ if(canvas){
 // SERVICE WORKER
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("service-worker.js");
+} // 🔥 PAINEL GLOBAL
+
+function carregarPainel(){
+
+  let fila = JSON.parse(localStorage.getItem("fila")) || [];
+  let usuarios = JSON.parse(localStorage.getItem("usuarios")) || {};
+
+  // TOTAL
+  document.getElementById("totalUsers").innerText =
+    "👥 Participantes: " + fila.length;
+
+  // HORAS
+  let totalHoras = 0;
+  Object.values(usuarios).forEach(u=>{
+    totalHoras += u.horas || 0;
+  });
+
+  document.getElementById("totalHoras").innerText =
+    "⏱️ Horas totais: " + totalHoras + "h";
 }
+
+// RANKING
+function toggleRanking(){
+
+  let box = document.getElementById("rankingBox");
+
+  if(box.style.display === "none"){
+    box.style.display = "block";
+    gerarRanking();
+  } else {
+    box.style.display = "none";
+  }
+}
+
+function gerarRanking(){
+
+  let usuarios = JSON.parse(localStorage.getItem("usuarios")) || {};
+
+  let lista = Object.entries(usuarios);
+
+  lista.sort((a,b)=>(b[1].horas||0)-(a[1].horas||0));
+
+  let html = "<ol>";
+
+  lista.forEach(([id,dados])=>{
+    html += `<li>Usuário ${id} — ${dados.horas || 0}h</li>`;
+  });
+
+  html += "</ol>";
+
+  document.getElementById("rankingBox").innerHTML = html;
+}
+
+carregarPainel();
 
 </script>
 
