@@ -13,193 +13,107 @@
 }
 
 *{box-sizing:border-box}
-body{margin:0;font-family:Arial,Helvetica,sans-serif;background:radial-gradient(1200px 600px at 50% -10%, #0f172a 0%, var(--bg) 60%);color:var(--text)}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden}
 
-/* HEADER LOGO */
-.header{
-  text-align:center;
-  padding:40px 20px 10px;
+/* LOADING SCREEN */
+#loader{
+ position:fixed;top:0;left:0;width:100%;height:100%;
+ background:#0b0f1a;display:flex;align-items:center;justify-content:center;
+ z-index:9999;flex-direction:column;
 }
-.header img{
-  width:220px;
-  height:220px;
-  object-fit:cover;
-  border-radius:50%;
-  box-shadow:0 0 40px rgba(56,189,248,0.25), 0 0 80px rgba(34,197,94,0.2);
+#loader img{width:140px;border-radius:50%;animation:pulse 2s infinite}
+#loader span{margin-top:15px;color:#94a3b8}
+@keyframes pulse{0%{transform:scale(1)}50%{transform:scale(1.08)}100%{transform:scale(1)}}
+
+/* CURSOR LIGHT */
+.cursor-glow{
+ position:fixed;width:300px;height:300px;
+ background:radial-gradient(circle, rgba(56,189,248,0.15), transparent 60%);
+ pointer-events:none;z-index:0;transform:translate(-50%,-50%);
 }
 
-/* NAV */
-.nav{
-  display:flex;justify-content:space-between;align-items:center;
-  padding:14px 28px;
-  background:rgba(15,23,42,0.7);
-  backdrop-filter: blur(10px);
-  border-bottom:1px solid rgba(56,189,248,0.15);
-  position:sticky;top:0;z-index:10;
-}
-.nav a{color:var(--text);text-decoration:none;margin-left:18px;font-size:14px;opacity:.9}
-.nav a:hover{color:var(--neon-2)}
+/* HEADER */
+.header{text-align:center;padding:40px 20px}
+.header img{width:220px;height:220px;border-radius:50%;animation:glow 3s infinite alternate}
+@keyframes glow{from{box-shadow:0 0 20px #38bdf8}to{box-shadow:0 0 60px #22c55e}}
 
-/* HERO */
-.hero{
-  text-align:center;
-  padding:70px 20px 40px;
-}
-.hero h1{
-  font-size:40px;
-  margin:10px 0;
-  letter-spacing:0.5px;
-  background:linear-gradient(90deg,var(--neon-2),var(--neon));
-  -webkit-background-clip:text;background-clip:text;color:transparent;
-}
-.hero p{max-width:620px;margin:10px auto;color:var(--muted);line-height:1.6}
+.nav{display:flex;justify-content:space-between;padding:15px 30px;background:#0f172a;position:sticky;top:0}
+.nav a{color:#fff;text-decoration:none;margin-left:15px}
+
+.hero{text-align:center;padding:80px 20px}
+.hero h1{font-size:38px;background:linear-gradient(90deg,#38bdf8,#22c55e);-webkit-background-clip:text;color:transparent}
+.hero p{color:#94a3b8}
 
 .btn{
-  display:inline-block;margin-top:22px;padding:14px 28px;border-radius:10px;
-  border:1px solid rgba(56,189,248,0.4);
-  background:linear-gradient(90deg, rgba(56,189,248,0.15), rgba(34,197,94,0.15));
-  color:var(--text);text-decoration:none;letter-spacing:1px;
-  box-shadow:0 10px 30px rgba(0,0,0,0.4);
-  transition:.25s ease;
+ display:inline-block;margin-top:20px;padding:14px 30px;border-radius:10px;
+ background:linear-gradient(90deg,#38bdf8,#22c55e);
+ color:#000;font-weight:bold;text-decoration:none;
+ transition:.3s;
 }
-.btn:hover{
-  transform:translateY(-2px);
-  box-shadow:0 14px 40px rgba(56,189,248,0.25);
-  border-color:rgba(34,197,94,0.6);
-}
+.btn:hover{transform:scale(1.05);box-shadow:0 0 20px #38bdf8}
 
-/* PANELS */
-.container{
-  max-width:1000px;margin:30px auto;padding:0 16px 40px;
-}
-.card{
-  background:linear-gradient(180deg, rgba(15,23,42,0.8), rgba(15,23,42,0.6));
-  border:1px solid rgba(56,189,248,0.12);
-  border-radius:16px;padding:26px;margin-top:18px;
-  box-shadow:0 20px 60px rgba(0,0,0,0.5);
-}
+.container{max-width:900px;margin:40px auto;padding:20px}
+.card{background:#0f172a;padding:25px;border-radius:12px;margin-top:20px;border:1px solid rgba(255,255,255,0.05)}
 
-h2{margin:0 0 10px 0;color:#cbd5f5;font-weight:600}
-ul{margin:8px 0 0 18px;color:var(--muted)}
+.steps{display:grid;grid-template-columns:1fr 1fr;gap:15px}
+.step{padding:15px;border:1px dashed rgba(56,189,248,0.3)}
 
-.steps{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.step{border:1px dashed rgba(56,189,248,0.25);border-radius:12px;padding:14px;color:var(--muted)}
+.phone a{color:#fff;text-decoration:none;font-weight:bold}
 
-/* CONTACT */
-.contact{ text-align:center }
-.phone a{color:var(--text);text-decoration:none;font-weight:700}
+.footer{text-align:center;margin:30px;color:#94a3b8;font-size:12px}
 
-/* FOOTER */
-.footer{margin:30px 0 10px;text-align:center;color:var(--muted);font-size:12px}
+canvas{position:fixed;top:0;left:0;z-index:-1}
 
-/* MOBILE */
-@media(max-width:700px){
-  .hero h1{font-size:30px}
-  .steps{grid-template-columns:1fr}
-  .header img{width:180px;height:180px}
-}
-
-/* LOGO ANIMATION */
-.header img{
-  animation: glowPulse 3s ease-in-out infinite alternate;
-}
-@keyframes glowPulse{
-  from{ box-shadow:0 0 20px rgba(56,189,248,0.2), 0 0 40px rgba(34,197,94,0.15);} 
-  to{ box-shadow:0 0 40px rgba(56,189,248,0.5), 0 0 80px rgba(34,197,94,0.35);} 
-}
-
-/* PARTICLES CANVAS */
-#particles{
-  position:fixed;
-  top:0;left:0;
-  width:100%;height:100%;
-  z-index:-1;
-}
-
-</style></head><body>
-<canvas id="particles"></canvas><!-- LOGO NO TOPO (IMAGEM FORNECIDA) --><div class="header">
-  <img src="file_000000001928720e8e1836080fc5bc2a" alt="Organic HTML Autopromove">
+@media(max-width:700px){.steps{grid-template-columns:1fr}}
+</style></head><body><!-- LOADER --><div id="loader">
+ <img src="file_000000001928720e8e1836080fc5bc2a">
+ <span>Carregando experiência...</span>
+</div><div class="cursor-glow" id="cursorGlow"></div>
+<canvas id="particles"></canvas><div class="header">
+ <img src="file_000000001928720e8e1836080fc5bc2a">
 </div><div class="nav">
-  <div><strong>Autopromover</strong></div>
-  <div>
-    <a href="#home">Início</a>
-    <a href="#metodo">Método</a>
-    <a href="#contato">Entrar</a>
+ <div><strong>Autopromover</strong></div>
+ <div>
+  <a href="#">Início</a>
+  <a href="#">Método</a>
+  <a href="#">Entrar</a>
+ </div>
+</div><div class="hero">
+ <h1>Crescimento Orgânico Inteligente</h1>
+ <p>Sistema avançado para crescimento acelerado no YouTube.</p>
+ <a class="btn" href="https://wa.me/13678903119">COMEÇAR</a>
+</div><div class="container">
+ <div class="card">
+  <h2>Método</h2>
+  <div class="steps">
+   <div class="step">Lives estratégicas</div>
+   <div class="step">Engajamento direcionado</div>
+   <div class="step">Troca de audiência</div>
+   <div class="step">Escala orgânica</div>
   </div>
-</div><section id="home" class="hero">
-  <h1>Crescimento Orgânico Inteligente</h1>
-  <p>Impulsione seu canal com um sistema colaborativo de engajamento real, consistência e estratégia focada no algoritmo.</p>
-  <a href="#contato" class="btn">COMEÇAR AGORA</a>
-</section><div class="container">
-  <div id="metodo" class="card">
-    <h2>Como Funciona</h2>
-    <div class="steps">
-      <div class="step">Participação em lives estratégicas</div>
-      <div class="step">Interação com comentários direcionados</div>
-      <div class="step">Engajamento recíproco entre membros</div>
-      <div class="step">Crescimento contínuo do canal</div>
-    </div>
-  </div>  <div class="card">
-    <h2>Regras</h2>
-    <ul>
-      <li>3 lives por dia</li>
-      <li>4 horas por live</li>
-      <li>Compromisso de 6 meses</li>
-    </ul>
-  </div>  <div id="contato" class="card contact">
-    <h2>Entrar Agora</h2>
-    <p class="phone"><a href="tel:+13678903119">+1 367 890 3119</a></p>
-    <a class="btn" href="https://wa.me/13678903119?text=Quero%20participar" target="_blank">FALAR NO WHATSAPP</a>
-    <br>
-    <a class="btn" href="https://wa.me/13678903119?text=Quero%20entrar%20no%20grupo" target="_blank">ENTRAR NO GRUPO</a>
-  </div>  <div class="footer">Privacidade: seus dados não são compartilhados.</div>
-</div><script>
-// PARTICLES EFFECT
-const canvas = document.getElementById('particles');
-const ctx = canvas.getContext('2d');
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
+ </div> <div class="card">
+  <h2>Contato</h2>
+  <p class="phone"><a href="tel:+13678903119">+1 367 890 3119</a></p>
+  <a class="btn" href="https://wa.me/13678903119">WhatsApp</a>
+ </div>
+</div><div class="footer">Privacidade garantida</div><script>
+// LOADER
+window.onload = () => setTimeout(()=>document.getElementById('loader').style.display='none',1500);
 
-let particlesArray = [];
-
-class Particle{
- constructor(){
-  this.x = Math.random()*canvas.width;
-  this.y = Math.random()*canvas.height;
-  this.size = Math.random()*2;
-  this.speedX = (Math.random()-0.5)*0.5;
-  this.speedY = (Math.random()-0.5)*0.5;
- }
- update(){
-  this.x += this.speedX;
-  this.y += this.speedY;
- }
- draw(){
-  ctx.fillStyle = 'rgba(56,189,248,0.5)';
-  ctx.beginPath();
-  ctx.arc(this.x,this.y,this.size,0,Math.PI*2);
-  ctx.fill();
- }
-}
-
-function init(){
- particlesArray=[];
- for(let i=0;i<80;i++){ particlesArray.push(new Particle()); }
-}
-
-function animate(){
- ctx.clearRect(0,0,canvas.width,canvas.height);
- particlesArray.forEach(p=>{p.update();p.draw();});
- requestAnimationFrame(animate);
-}
-
-init();
-animate();
-
-window.addEventListener('resize',()=>{
- canvas.width=window.innerWidth;
- canvas.height=window.innerHeight;
- init();
+// CURSOR LIGHT
+const glow=document.getElementById('cursorGlow');
+document.addEventListener('mousemove',e=>{
+ glow.style.left=e.clientX+'px';
+ glow.style.top=e.clientY+'px';
 });
+
+// PARTICLES
+const canvas=document.getElementById('particles');
+const ctx=canvas.getContext('2d');
+canvas.width=window.innerWidth;canvas.height=window.innerHeight;
+let particles=[];
+for(let i=0;i<60;i++){particles.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,vx:Math.random()-0.5,vy:Math.random()-0.5})}
+function animate(){ctx.clearRect(0,0,canvas.width,canvas.height);particles.forEach(p=>{p.x+=p.vx;p.y+=p.vy;ctx.fillStyle='#38bdf8';ctx.fillRect(p.x,p.y,2,2)});requestAnimationFrame(animate)}
+animate();
 </script></body>
 </html>
