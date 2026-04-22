@@ -153,6 +153,14 @@ canvas{position:fixed;top:0;left:0;z-index:-1}
 <div class="footer">Privacidade garantida</div>
 
 <script>
+
+// 🔥 SINCRONIZAÇÃO EM TEMPO REAL ENTRE ABAS
+window.addEventListener("storage", (event) => {
+  if(event.key === "fila" || event.key === "usuarios"){
+    if(typeof atualizar === "function") atualizar();
+    if(typeof carregarPainel === "function") carregarPainel();
+  }
+});    
     
 // LOADER
 window.onload = () => {
