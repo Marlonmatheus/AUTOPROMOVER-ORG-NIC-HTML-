@@ -14,7 +14,7 @@ body {
     color:white;
 }
 .container { padding:20px; max-width:900px; margin:auto; }
-h1 { text-align:center; }
+h1 { text-align:center; cursor:pointer; }
 
 .card {
     background: rgba(255,255,255,0.05);
@@ -44,6 +44,14 @@ button {
 }
 
 .highlight { color:cyan; }
+
+.admin {
+    display:none;
+    background:#111;
+    padding:15px;
+    border-radius:10px;
+    margin-top:10px;
+}
 </style>
 
 </head>
@@ -52,11 +60,17 @@ button {
 
 <div class="container">
 
-<h1>🚀 Cronograma PRO</h1>
+<h1 onclick="abrirAdmin()">🚀 Cronograma PRO</h1>
+
+<div id="adminPanel" class="admin">
+<h3>🔐 Admin Panel</h3>
+<button onclick="resetarSistema()">Reset Total</button>
+<button onclick="add10()">+10 usuários</button>
+</div>
 
 <div class="card">
 <h2>🔐 Login</h2>
-<input id="nome" placeholder="Seu número (ex: 1, 2, 3...)">
+<input id="nome" placeholder="Seu número">
 <button onclick="login()">Entrar</button>
 <button onclick="logout()">Sair</button>
 <p id="user"></p>
@@ -66,9 +80,7 @@ button {
 <h2>👥 Participantes</h2>
 <div class="lista" id="fila"></div>
 
-<button onclick="add10()">Simular +10 Pessoas</button>
 <button onclick="rodar()">🚀 Simular Próximo Dia</button>
-<button onclick="resetarSistema()">🧹 Resetar Sistema</button>
 </div>
 
 <div class="card">
@@ -85,7 +97,12 @@ button {
 </div>
 
 <div class="card">
-<h2>⏱️ Horas Lives</h2>
+<h2>🏆 Ranking (Horas)</h2>
+<div id="ranking"></div>
+</div>
+
+<div class="card">
+<h2>⏱️ Suas Horas</h2>
 <p id="horas"></p>
 </div>
 
@@ -105,7 +122,7 @@ import {
 
 // CONFIG
 const firebaseConfig = {
-  apiKey: "AIzaSyCIzJ8ggh1nJozmZEjSUcT9pFuedam-7fA",
+  apiKey: "AIzaSyCIzJ8ggh1nJozmZEjSUcT9fUedam-7fA",
   authDomain: "cronograma-pro-407b4.firebaseapp.com",
   databaseURL: "https://cronograma-pro-407b4-default-rtdb.firebaseio.com/",
   projectId: "cronograma-pro-407b4",
@@ -114,34 +131,39 @@ const firebaseConfig = {
   appId: "1:740937794761:web:dbf86a5f2a574812837918"
 };
 
-// INIT
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-// REF
 const filaRef = ref(db, "fila");
 const usuariosRef = ref(db, "usuarios");
 
-// STATE
 let fila = [];
 let usuarios = {};
+
 let usuario = sessionStorage.getItem("usuario");
 usuario = usuario ? Number(usuario) : null;
 
 /* =========================
-   LOGIN / LOGOUT
+   ADMIN
+========================= */
+window.abrirAdmin = function () {
+  let senha = prompt("Senha admin:");
+
+  if (senha === "1234") {
+    document.getElementById("adminPanel").style.display = "block";
+  }
+};
+
+/* =========================
+   LOGIN
 ========================= */
 window.login = function () {
   let nome = document.getElementById("nome").value.trim();
 
-  if (nome === "" || isNaN(nome)) {
-    alert("Digite apenas números!");
-    return;
-  }
+  if (nome === "" || isNaN(nome)) return alert("Digite número!");
 
   usuario = Number(nome);
   sessionStorage.setItem("usuario", usuario);
-
   atualizarUI();
 };
 
@@ -152,10 +174,11 @@ window.logout = function () {
 };
 
 /* =========================
-   FIREBASE REALTIME
+   FIREBASE
 ========================= */
 onValue(filaRef, snap => {
-  fila = snap.val() || [];
+  const data = snap.val();
+  fila = Array.isArray(data) ? data : Object.values(data || []);
   atualizarUI();
 });
 
@@ -165,7 +188,7 @@ onValue(usuariosRef, snap => {
 });
 
 /* =========================
-   UI PRINCIPAL
+   UI
 ========================= */
 function atualizarUI() {
 
@@ -178,38 +201,49 @@ function atualizarUI() {
   document.getElementById("dias").innerText = "Ciclo: " + dias + " dias";
 
   let ativos = fila.slice(0, 6);
-  let letras = ["A", "B", "C", "D", "E", "F"];
-  let texto = "";
 
-  for (let i = 0; i < 6; i++) {
-    texto += `${letras[i]}:${ativos[i] || "-"} `;
-  }
-
-  document.getElementById("ativos").innerText = texto;
+  document.getElementById("ativos").innerText =
+    ativos.map((a,i)=>`L${i+1}:${a||"-"}`).join(" ");
 
   let espera = fila.slice(6);
   document.getElementById("espera").innerText =
-    "Espera: " + (espera.length ? espera.join(", ") : "-");
+    espera.length ? espera.join(", ") : "-";
 
+  // usuário
   if (usuario !== null) {
 
     document.getElementById("user").innerText = "Logado: " + usuario;
 
-    if (ativos && ativos.includes(usuario)) {
+    if (ativos.map(Number).includes(Number(usuario))) {
       document.getElementById("minhaVez").innerHTML =
-        "<span class='highlight'>🔥 É SUA VEZ HOJE!</span>";
+        "<span class='highlight'>🔥 É SUA VEZ</span>";
     } else {
       document.getElementById("minhaVez").innerText = "Aguardando...";
     }
 
     if (!usuarios[usuario]) {
       usuarios[usuario] = { horas: 0 };
-      set(usuariosRef, usuarios); // CORRIGIDO (sem update perigoso)
+      update(usuariosRef, usuarios);
     }
 
     document.getElementById("horas").innerText =
-      "Você assistiu: " + (usuarios[usuario]?.horas || 0) + "h";
+      usuarios[usuario].horas + "h";
   }
+
+  renderRanking();
+}
+
+/* =========================
+   RANKING
+========================= */
+function renderRanking() {
+
+  let lista = Object.entries(usuarios)
+    .sort((a,b)=>b[1].horas - a[1].horas)
+    .slice(0,10);
+
+  document.getElementById("ranking").innerHTML =
+    lista.map(u=>`#${u[0]} - ${u[1].horas}h`).join("<br>");
 }
 
 /* =========================
@@ -228,18 +262,20 @@ window.rodar = function () {
   fila = fila.concat(usados);
 
   set(filaRef, fila);
-  set(usuariosRef, usuarios);
+  update(usuariosRef, usuarios);
 };
 
 /* =========================
-   ADD +10
+   ADD 10 (ANTI DUPLICADO)
 ========================= */
 window.add10 = function () {
 
   let atual = fila.length;
 
   for (let i = 1; i <= 10; i++) {
-    fila.push(atual + i);
+    if (!fila.includes(atual + i)) {
+      fila.push(atual + i);
+    }
   }
 
   set(filaRef, fila);
@@ -249,27 +285,12 @@ window.add10 = function () {
    RESET
 ========================= */
 window.resetarSistema = function () {
-  if (confirm("Resetar sistema?")) {
+  if (confirm("Resetar tudo?")) {
     set(filaRef, []);
     set(usuariosRef, {});
     sessionStorage.clear();
   }
 };
-
-/* =========================
-   INICIALIZAÇÃO SEGURA
-========================= */
-async function iniciarSistema() {
-  const snap = await get(filaRef);
-
-  if (!snap.exists()) {
-    let inicial = [];
-    for (let i = 1; i <= 10; i++) inicial.push(i);
-    await set(filaRef, inicial);
-  }
-}
-
-iniciarSistema();
 
 </script>
 
