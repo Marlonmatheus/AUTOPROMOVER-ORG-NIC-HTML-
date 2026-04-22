@@ -157,10 +157,12 @@ function login(){
 // =====================
 function atualizar(){
 
-    document.getElementById("fila").innerText = "";
-    document.getElementById("ativos").innerText = "";
-    document.getElementById("espera").innerText = "";
-
+    // limpa dados antigos da tela
+    
+document.getElementById("user").innerText = "";
+document.getElementById("horas").innerText = "";
+document.getElementById("minhaVez").innerText = "";
+  
     let total = fila.length;
     let dias = Math.ceil(total / 6);
 
