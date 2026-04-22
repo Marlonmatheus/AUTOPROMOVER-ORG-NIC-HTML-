@@ -153,88 +153,36 @@ canvas{position:fixed;top:0;left:0;z-index:-1}
 <div class="footer">Privacidade garantida</div>
 
 <script>
-
-// =============================
+    
 // LOADER
-// =============================
 window.onload = () => {
   const loader = document.getElementById('loader');
   if(loader){
     setTimeout(()=> loader.style.display='none',1500);
   }
 
-  carregarPainel(); // 🔥 carrega ao abrir
+  carregarPainel();
 };
 
-// =============================
-// ATUALIZA AUTOMÁTICO
-// =============================
-setInterval(carregarPainel, 3000); // atualiza a cada 3s
+// AUTO UPDATE
+setInterval(carregarPainel, 3000);
 
-// =============================
-// CURSOR
-// =============================
-const glow = document.getElementById('cursorGlow');
-if(glow){
-  document.addEventListener('mousemove',e=>{
-    glow.style.left=e.clientX+'px';
-    glow.style.top=e.clientY+'px';
-  });
-}
-
-// =============================
-// PARTICLES
-// =============================
-const canvas = document.getElementById('particles');
-if(canvas){
-  const ctx = canvas.getContext('2d');
-  canvas.width=window.innerWidth;
-  canvas.height=window.innerHeight;
-
-  let particles=[];
-  for(let i=0;i<60;i++){
-    particles.push({
-      x:Math.random()*canvas.width,
-      y:Math.random()*canvas.height,
-      vx:Math.random()-0.5,
-      vy:Math.random()-0.5
-    });
+// 🔥 SINCRONIZAÇÃO REAL
+window.addEventListener("storage", (event) => {
+  if(event.key === "sync" || event.key === "usuarios" || event.key === "fila"){
+    carregarPainel();
   }
+});
 
-  function animate(){
-    ctx.clearRect(0,0,canvas.width,canvas.height);
-    particles.forEach(p=>{
-      p.x+=p.vx;
-      p.y+=p.vy;
-      ctx.fillStyle='#38bdf8';
-      ctx.fillRect(p.x,p.y,2,2);
-    });
-    requestAnimationFrame(animate);
-  }
-
-  animate();
-}
-
-// =============================
-// SERVICE WORKER
-// =============================
-if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("service-worker.js");
-}
-
-// =============================
-// PAINEL GLOBAL
-// =============================
+// PAINEL
 function carregarPainel(){
 
   let fila = JSON.parse(localStorage.getItem("fila")) || [];
   let usuarios = JSON.parse(localStorage.getItem("usuarios")) || {};
 
-  // TOTAL PARTICIPANTES
   document.getElementById("totalUsers").innerText =
     "👥 Participantes: " + fila.length;
 
-  // TOTAL HORAS
   let totalHoras = 0;
 
   Object.values(usuarios).forEach(u=>{
@@ -245,9 +193,7 @@ function carregarPainel(){
     "⏱️ Horas totais: " + totalHoras + "h";
 }
 
-// =============================
 // RANKING
-// =============================
 function toggleRanking(){
 
   let box = document.getElementById("rankingBox");
@@ -277,8 +223,7 @@ function gerarRanking(){
   html += "</ol>";
 
   document.getElementById("rankingBox").innerHTML = html;
-}
-    
+                                                 }
 </script>
 
 </body>
