@@ -13,13 +13,7 @@ body {
     background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
     color:white;
 }
-
-.container {
-    padding:20px;
-    max-width:900px;
-    margin:auto;
-}
-
+.container { padding:20px; max-width:900px; margin:auto; }
 h1 { text-align:center; }
 
 .card {
@@ -31,22 +25,14 @@ h1 { text-align:center; }
 }
 
 input {
-    width:100%;
-    padding:10px;
-    margin-top:10px;
-    border-radius:8px;
-    border:none;
+    width:100%; padding:10px; margin-top:10px;
+    border-radius:8px; border:none;
 }
 
 button {
-    padding:10px;
-    margin-top:10px;
-    width:100%;
-    border:none;
-    border-radius:10px;
-    background:cyan;
-    font-weight:bold;
-    cursor:pointer;
+    padding:10px; margin-top:10px; width:100%;
+    border:none; border-radius:10px;
+    background:cyan; font-weight:bold; cursor:pointer;
 }
 
 .lista {
@@ -59,9 +45,6 @@ button {
 
 .highlight { color:cyan; }
 </style>
-
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#00ffff">
 
 </head>
 
@@ -85,6 +68,7 @@ button {
 
 <button onclick="add10()">Simular +10 Pessoas</button>
 <button onclick="rodar()">🚀 Simular Próximo Dia</button>
+<button onclick="resetarSistema()">🧹 Resetar Sistema</button>
 </div>
 
 <div class="card">
@@ -115,15 +99,23 @@ button {
 let fila = JSON.parse(localStorage.getItem("fila")) || [];
 let usuarios = JSON.parse(localStorage.getItem("usuarios")) || {};
 let usuario = sessionStorage.getItem("usuario");
-
 usuario = usuario ? Number(usuario) : null;
 
 // =====================
-// INICIAR FILA
+// SALVAR
+// =====================
+function salvar(){
+    localStorage.setItem("fila", JSON.stringify(fila));
+    localStorage.setItem("usuarios", JSON.stringify(usuarios));
+}
+
+// =====================
+// INICIAR
 // =====================
 function iniciar(){
     if(fila.length === 0){
         for(let i=1;i<=10;i++) fila.push(i);
+        salvar();
     }
 }
 
@@ -140,7 +132,6 @@ function login(){
 
     usuario = Number(nome);
     sessionStorage.setItem("usuario", usuario);
-
     atualizar();
 }
 
@@ -154,17 +145,13 @@ function logout(){
 }
 
 // =====================
-// ATUALIZAR TELA
+// ATUALIZAR
 // =====================
 function atualizar(){
 
-    // LIMPEZA TOTAL (resolve seu problema)
-    document.getElementById("user").innerText = "";
-    document.getElementById("horas").innerText = "";
-    document.getElementById("minhaVez").innerText = "";
-    document.getElementById("ativos").innerText = "";
-    document.getElementById("espera").innerText = "";
-    document.getElementById("fila").innerText = "";
+    ["user","horas","minhaVez","ativos","espera","fila"].forEach(id=>{
+        document.getElementById(id).innerText = "";
+    });
 
     let total = fila.length;
     let dias = Math.ceil(total / 6);
@@ -175,16 +162,14 @@ function atualizar(){
     document.getElementById("fila").innerText = fila.join(", ");
 
     let ativos = fila.slice(0,6);
-
-    // evita undefined
-    let nomes = ["A","B","C","D","E","F"];
-    let textoAtivos = "";
+    let letras = ["A","B","C","D","E","F"];
+    let texto = "";
 
     for(let i=0;i<6;i++){
-        textoAtivos += nomes[i] + ":" + (ativos[i] || "-") + " ";
+        texto += `${letras[i]}:${ativos[i] || "-"} `;
     }
 
-    document.getElementById("ativos").innerText = textoAtivos;
+    document.getElementById("ativos").innerText = texto;
 
     let espera = fila.slice(6);
     document.getElementById("espera").innerText =
@@ -211,31 +196,28 @@ function atualizar(){
 }
 
 // =====================
-// AVANÇAR DIA
+// RODAR DIA
 // =====================
 function rodar(){
 
     let ativos = fila.slice(0,6);
 
     ativos.forEach(id=>{
-        if(!usuarios[id]){
-            usuarios[id] = { horas: 0 };
-        }
+        if(!usuarios[id]) usuarios[id] = { horas: 0 };
         usuarios[id].horas += 6;
     });
-
-    localStorage.setItem("usuarios", JSON.stringify(usuarios));
 
     let usados = fila.splice(0,6);
     fila = fila.concat(usados);
 
-    localStorage.setItem("fila", JSON.stringify(fila));
-
+    salvar();
     atualizar();
+
+    localStorage.setItem("sync", Date.now());
 }
 
 // =====================
-// ADICIONAR +10
+// ADD +10
 // =====================
 function add10(){
     let atual = fila.length;
@@ -244,13 +226,23 @@ function add10(){
         fila.push(atual + i);
     }
 
-    localStorage.setItem("fila", JSON.stringify(fila));
-
+    salvar();
     atualizar();
+
+    localStorage.setItem("sync", Date.now());
 }
 
 // =====================
-// INICIAR
+// RESET
+// =====================
+function resetarSistema(){
+    if(confirm("Resetar sistema?")){
+        localStorage.clear();
+        sessionStorage.clear();
+        location.reload();
+    }
+}
+
 // =====================
 iniciar();
 atualizar();
