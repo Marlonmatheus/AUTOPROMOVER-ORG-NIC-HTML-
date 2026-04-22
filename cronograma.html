@@ -6,14 +6,51 @@
 <title>Cronograma PRO APP</title>
 
 <style>
-body{margin:0;font-family:Arial;background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);color:white}
-.container{padding:20px;max-width:900px;margin:auto}
-.card{background:rgba(255,255,255,0.05);padding:15px;border-radius:15px;margin-bottom:15px}
-input,button{width:100%;padding:10px;margin-top:10px;border-radius:8px;border:none}
-button{background:cyan;font-weight:bold;cursor:pointer}
-.lista{max-height:150px;overflow:auto;background:#0005;padding:10px;border-radius:10px}
+body{
+margin:0;
+font-family:Arial;
+background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+color:white;
+}
+
+.container{
+padding:20px;
+max-width:900px;
+margin:auto;
+}
+
+.card{
+background:rgba(255,255,255,0.05);
+padding:15px;
+border-radius:15px;
+margin-bottom:15px;
+}
+
+input,button{
+width:100%;
+padding:10px;
+margin-top:10px;
+border-radius:8px;
+border:none;
+}
+
+button{
+background:cyan;
+font-weight:bold;
+cursor:pointer;
+}
+
+.lista{
+max-height:150px;
+overflow:auto;
+background:#0005;
+padding:10px;
+border-radius:10px;
+}
+
 .highlight{color:cyan}
 </style>
+
 </head>
 
 <body>
@@ -33,8 +70,9 @@ button{background:cyan;font-weight:bold;cursor:pointer}
 <div class="card">
 <h2>Fila</h2>
 <div class="lista" id="fila"></div>
+
 <button onclick="rodar()">Próximo Dia</button>
-<button onclick="add10()">+10</button>
+<button onclick="add10()">+10 usuários</button>
 <button onclick="resetarSistema()">Reset</button>
 </div>
 
@@ -46,7 +84,7 @@ button{background:cyan;font-weight:bold;cursor:pointer}
 </div>
 
 <div class="card">
-<h2>Lives</h2>
+<h2>Lives (3 simultâneas)</h2>
 <p id="ativos"></p>
 <p id="espera"></p>
 </div>
@@ -61,9 +99,8 @@ button{background:cyan;font-weight:bold;cursor:pointer}
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import {
-getDatabase, ref, set, onValue, update
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import { getDatabase, ref, set, onValue, update } 
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
 const app = initializeApp({
 apiKey:"AIzaSyCIzJ8ggh1nJozmZEjSUcT9fUedam-7fA",
@@ -74,8 +111,8 @@ projectId:"cronograma-pro-407b4"
 
 const db = getDatabase(app);
 
-const filaRef=ref(db,"fila");
-const usuariosRef=ref(db,"usuarios");
+const filaRef = ref(db,"fila");
+const usuariosRef = ref(db,"usuarios");
 
 let fila=[];
 let usuarios={};
@@ -98,10 +135,10 @@ usuario=null;
 render();
 };
 
-/* FIREBASE SAFE SYNC */
+/* FIREBASE */
 onValue(filaRef,s=>{
-const val=s.val();
-fila = Array.isArray(val) ? val : Object.values(val||{});
+const v=s.val();
+fila = Array.isArray(v)?v:Object.values(v||{});
 render();
 });
 
@@ -110,28 +147,29 @@ usuarios=s.val()||{};
 render();
 });
 
-/* RENDER ÚNICO (EVITA LOOP) */
+/* RENDER */
 function render(){
 
 document.getElementById("fila").innerText=fila.join(", ");
 
 let ativos=fila.slice(0,6);
 
+// 🎥 3 lives simultâneas fixas
 document.getElementById("ativos").innerText=
-ativos.map((a,i)=>`L${i+1}:${a||"-"}`).join(" ");
+`Live 1: ${ativos[0]} + ${ativos[1]} | Live 2: ${ativos[2]} + ${ativos[3]} | Live 3: ${ativos[4]} + ${ativos[5]}`;
 
 document.getElementById("espera").innerText=fila.slice(6).join(", ")||"-";
 
 document.getElementById("total").innerText="Total: "+fila.length;
 
-document.getElementById("dias").innerText="Dias: "+Math.ceil(fila.length/6);
+document.getElementById("dias").innerText="3 lives fixas / 6 participantes por ciclo";
 
 if(usuario!==null){
 
-document.getElementById("user").innerText="Logado "+usuario;
+document.getElementById("user").innerText="Logado: "+usuario;
 
 document.getElementById("minhaVez").innerText=
-ativos.includes(usuario)?"🔥 SUA VEZ":"Aguardando";
+ativos.includes(usuario)?"🔥 SUA LIVE HOJE":"Aguardando";
 
 if(!usuarios[usuario])usuarios[usuario]={horas:0};
 
@@ -147,18 +185,29 @@ window.rodar=()=>{
 
 let ativos=fila.slice(0,6);
 
-ativos.forEach(id=>{
+// 🔥 lógica correta: 3 lives simultâneas (pares)
+const lives=[
+[ativos[0],ativos[1]],
+[ativos[2],ativos[3]],
+[ativos[4],ativos[5]]
+];
+
+// cada live roda ao mesmo tempo → 18h por pessoa
+lives.forEach(par=>{
+par.forEach(id=>{
 if(!usuarios[id])usuarios[id]={horas:0};
-usuarios[id].horas+=6;
+usuarios[id].horas+=18;
+});
 });
 
-fila=fila.slice(6).concat(ativos);
+// ciclo fixo
+fila=[...fila.slice(6),...ativos];
 
 set(filaRef,fila);
 update(usuariosRef,usuarios);
 };
 
-/* ADD */
+/* ADD 10 */
 window.add10=()=>{
 let base=fila.length;
 for(let i=1;i<=10;i++){
