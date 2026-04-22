@@ -247,6 +247,14 @@ function resetarSistema(){
 iniciar();
 atualizar();
 
+    // 🔥 SINCRONIZAÇÃO EM TEMPO REAL ENTRE ABAS
+window.addEventListener("storage", (event) => {
+  if(event.key === "fila" || event.key === "usuarios"){
+    if(typeof atualizar === "function") atualizar();
+    if(typeof carregarPainel === "function") carregarPainel();
+  }
+});
+
 </script>
 
 </body>
