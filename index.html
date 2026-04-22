@@ -76,7 +76,7 @@ canvas{position:fixed;top:0;left:0;z-index:-1}
 
 <!-- LOADER -->
 <div id="loader">
- <img src="file_000000001928720e8e1836080fc5bc2a">
+ <img src="logo.png">
  <span>Carregando experiência...</span>
 </div>
 
@@ -154,15 +154,26 @@ canvas{position:fixed;top:0;left:0;z-index:-1}
 
 <script>
 
+// =============================
 // LOADER
+// =============================
 window.onload = () => {
   const loader = document.getElementById('loader');
   if(loader){
     setTimeout(()=> loader.style.display='none',1500);
   }
+
+  carregarPainel(); // 🔥 carrega ao abrir
 };
 
+// =============================
+// ATUALIZA AUTOMÁTICO
+// =============================
+setInterval(carregarPainel, 3000); // atualiza a cada 3s
+
+// =============================
 // CURSOR
+// =============================
 const glow = document.getElementById('cursorGlow');
 if(glow){
   document.addEventListener('mousemove',e=>{
@@ -171,7 +182,9 @@ if(glow){
   });
 }
 
+// =============================
 // PARTICLES
+// =============================
 const canvas = document.getElementById('particles');
 if(canvas){
   const ctx = canvas.getContext('2d');
@@ -202,22 +215,28 @@ if(canvas){
   animate();
 }
 
+// =============================
 // SERVICE WORKER
+// =============================
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("service-worker.js");
-} // 🔥 PAINEL GLOBAL
+}
 
+// =============================
+// PAINEL GLOBAL
+// =============================
 function carregarPainel(){
 
   let fila = JSON.parse(localStorage.getItem("fila")) || [];
   let usuarios = JSON.parse(localStorage.getItem("usuarios")) || {};
 
-  // TOTAL
+  // TOTAL PARTICIPANTES
   document.getElementById("totalUsers").innerText =
     "👥 Participantes: " + fila.length;
 
-  // HORAS
+  // TOTAL HORAS
   let totalHoras = 0;
+
   Object.values(usuarios).forEach(u=>{
     totalHoras += u.horas || 0;
   });
@@ -226,7 +245,9 @@ function carregarPainel(){
     "⏱️ Horas totais: " + totalHoras + "h";
 }
 
+// =============================
 // RANKING
+// =============================
 function toggleRanking(){
 
   let box = document.getElementById("rankingBox");
@@ -257,9 +278,7 @@ function gerarRanking(){
 
   document.getElementById("rankingBox").innerHTML = html;
 }
-
-carregarPainel();
-
+    
 </script>
 
 </body>
