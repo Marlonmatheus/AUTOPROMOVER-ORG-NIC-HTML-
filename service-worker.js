@@ -1,4 +1,4 @@
-const CACHE_NAME = "cronograma-cache-v2"; // 🔥 muda versão sempre que atualizar
+const CACHE_NAME = "cronograma-cache-v3";
 
 const FILES = [
   "index.html",
@@ -7,39 +7,63 @@ const FILES = [
   "icon.png"
 ];
 
-// INSTALAÇÃO
-self.addEventListener("install", e => {
-  self.skipWaiting(); // 🔥 força atualização imediata
+// INSTALL
+self.addEventListener("install", (event) => {
+  self.skipWaiting();
 
-  e.waitUntil(
-    caches.open(CACHE_NAME).then(cache => {
+  event.waitUntil(
+    caches.open(CACHE_NAME).then((cache) => {
       return cache.addAll(FILES);
     })
   );
 });
 
-// ATIVAÇÃO (limpa cache antigo)
-self.addEventListener("activate", e => {
-  e.waitUntil(
-    caches.keys().then(keys => {
+// ACTIVATE
+self.addEventListener("activate", (event) => {
+  event.waitUntil(
+    caches.keys().then((keys) => {
       return Promise.all(
-        keys.filter(k => k !== CACHE_NAME)
-            .map(k => caches.delete(k))
+        keys
+          .filter((key) => key !== CACHE_NAME)
+          .map((key) => caches.delete(key))
       );
     })
   );
 });
 
-// FETCH
-self.addEventListener("fetch", e => {
-  e.respondWith(
-    fetch(e.request)
-      .then(res => {
-        return caches.open(CACHE_NAME).then(cache => {
-          cache.put(e.request, res.clone());
-          return res;
-        });
-      })
-      .catch(() => caches.match(e.request))
+// FETCH (🔥 CORRIGIDO)
+self.addEventListener("fetch", (event) => {
+
+  const url = event.request.url;
+
+  // ❌ NÃO cacheia Firebase nem APIs externas
+  if (
+    url.includes("firebaseio.com") ||
+    url.includes("googleapis") ||
+    event.request.method !== "GET"
+  ) {
+    return;
+  }
+
+  event.respondWith(
+    caches.match(event.request).then((cached) => {
+      const fetchPromise = fetch(event.request)
+        .then((networkResponse) => {
+          if (
+            networkResponse &&
+            networkResponse.status === 200 &&
+            networkResponse.type === "basic"
+          ) {
+            const responseClone = networkResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => {
+              cache.put(event.request, responseClone);
+            });
+          }
+          return networkResponse;
+        })
+        .catch(() => cached);
+
+      return cached || fetchPromise;
+    })
   );
 });
