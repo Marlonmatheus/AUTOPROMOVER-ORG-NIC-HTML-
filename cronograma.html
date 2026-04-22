@@ -90,170 +90,167 @@ button {
 </div>
 
 </div>
+    
+<script type="module">
 
-<script>
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getDatabase, ref, set, get, update } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-// =====================
-// DADOS
-// =====================
-let fila = JSON.parse(localStorage.getItem("fila")) || [];
-let usuarios = JSON.parse(localStorage.getItem("usuarios")) || {};
+// CONFIG
+const firebaseConfig = {
+  apiKey: "AIzaSyCIzJ8ggh1nJozmZEjSUcT9pFuedam-7fA",
+  authDomain: "cronograma-pro-407b4.firebaseapp.com",
+  databaseURL: "https://cronograma-pro-407b4-default-rtdb.firebaseio.com/",
+  projectId: "cronograma-pro-407b4",
+  storageBucket: "cronograma-pro-407b4.appspot.com",
+  messagingSenderId: "740937794761",
+  appId: "1:740937794761:web:dbf86a5f2a574812837918"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
 let usuario = sessionStorage.getItem("usuario");
 usuario = usuario ? Number(usuario) : null;
 
-// =====================
-// SALVAR
-// =====================
-function salvar(){
-    localStorage.setItem("fila", JSON.stringify(fila));
-    localStorage.setItem("usuarios", JSON.stringify(usuarios));
-}
-
-// =====================
-// INICIAR
-// =====================
-function iniciar(){
-    if(fila.length === 0){
-        for(let i=1;i<=10;i++) fila.push(i);
-        salvar();
-    }
-}
-
-// =====================
 // LOGIN
-// =====================
-function login(){
-    let nome = document.getElementById("nome").value.trim();
+window.login = async function(){
 
-    if(nome === "" || isNaN(nome)){
-        alert("Digite apenas números!");
-        return;
-    }
+  let nome = document.getElementById("nome").value.trim();
 
-    usuario = Number(nome);
-    sessionStorage.setItem("usuario", usuario);
-    atualizar();
-}
-
-// =====================
-// LOGOUT
-// =====================
-function logout(){
-    sessionStorage.removeItem("usuario");
-    usuario = null;
-    atualizar();
-}
-
-// =====================
-// ATUALIZAR
-// =====================
-function atualizar(){
-
-    ["user","horas","minhaVez","ativos","espera","fila"].forEach(id=>{
-        document.getElementById(id).innerText = "";
-    });
-
-    let total = fila.length;
-    let dias = Math.ceil(total / 6);
-
-    document.getElementById("total").innerText = "Total: " + total;
-    document.getElementById("dias").innerText = "Ciclo: " + dias + " dias";
-
-    document.getElementById("fila").innerText = fila.join(", ");
-
-    let ativos = fila.slice(0,6);
-    let letras = ["A","B","C","D","E","F"];
-    let texto = "";
-
-    for(let i=0;i<6;i++){
-        texto += `${letras[i]}:${ativos[i] || "-"} `;
-    }
-
-    document.getElementById("ativos").innerText = texto;
-
-    let espera = fila.slice(6);
-    document.getElementById("espera").innerText =
-        "Espera: " + (espera.length ? espera.join(", ") : "-");
-
-    if(usuario !== null){
-
-        document.getElementById("user").innerText = "Logado: " + usuario;
-
-        if(ativos.includes(usuario)){
-            document.getElementById("minhaVez").innerHTML =
-                "<span class='highlight'>🔥 É SUA VEZ HOJE!</span>";
-        } else {
-            document.getElementById("minhaVez").innerText = "Aguardando...";
-        }
-
-        if(!usuarios[usuario]){
-            usuarios[usuario] = { horas: 0 };
-        }
-
-        document.getElementById("horas").innerText =
-            "Você assistiu: " + usuarios[usuario].horas + "h";
-    }
-}
-
-// =====================
-// RODAR DIA
-// =====================
-function rodar(){
-
-    let ativos = fila.slice(0,6);
-
-    ativos.forEach(id=>{
-        if(!usuarios[id]) usuarios[id] = { horas: 0 };
-        usuarios[id].horas += 6;
-    });
-
-    let usados = fila.splice(0,6);
-    fila = fila.concat(usados);
-
-    salvar();
-    atualizar();
-
-    localStorage.setItem("sync", Date.now());
-}
-
-// =====================
-// ADD +10
-// =====================
-function add10(){
-    let atual = fila.length;
-
-    for(let i=1;i<=10;i++){
-        fila.push(atual + i);
-    }
-
-    salvar();
-    atualizar();
-
-    localStorage.setItem("sync", Date.now());
-}
-
-// =====================
-// RESET
-// =====================
-function resetarSistema(){
-    if(confirm("Resetar sistema?")){
-        localStorage.clear();
-        sessionStorage.clear();
-        location.reload();
-    }
-}
-
-// =====================
-iniciar();
-atualizar();
-
-    // 🔥 SINCRONIZAÇÃO EM TEMPO REAL ENTRE ABAS
-window.addEventListener("storage", (event) => {
-  if(event.key === "fila" || event.key === "usuarios"){
-    if(typeof atualizar === "function") atualizar();
-    if(typeof carregarPainel === "function") carregarPainel();
+  if(nome === "" || isNaN(nome)){
+    alert("Digite apenas números!");
+    return;
   }
-});
+
+  usuario = Number(nome);
+  sessionStorage.setItem("usuario", usuario);
+  atualizar();
+};
+
+// LOGOUT
+window.logout = function(){
+  sessionStorage.removeItem("usuario");
+  usuario = null;
+  atualizar();
+};
+
+// 🔥 ATUALIZAR
+async function atualizar(){
+
+  const filaSnap = await get(ref(db, "fila"));
+  const usuariosSnap = await get(ref(db, "usuarios"));
+
+  let fila = filaSnap.val() || [];
+  let usuarios = usuariosSnap.val() || {};
+
+  document.getElementById("fila").innerText = fila.join(", ");
+
+  let total = fila.length;
+  let dias = Math.ceil(total / 6);
+
+  document.getElementById("total").innerText = "Total: " + total;
+  document.getElementById("dias").innerText = "Ciclo: " + dias + " dias";
+
+  let ativos = fila.slice(0,6);
+  let letras = ["A","B","C","D","E","F"];
+  let texto = "";
+
+  for(let i=0;i<6;i++){
+    texto += `${letras[i]}:${ativos[i] || "-"} `;
+  }
+
+  document.getElementById("ativos").innerText = texto;
+
+  let espera = fila.slice(6);
+  document.getElementById("espera").innerText =
+    "Espera: " + (espera.length ? espera.join(", ") : "-");
+
+  if(usuario !== null){
+
+    document.getElementById("user").innerText = "Logado: " + usuario;
+
+    if(ativos.includes(usuario)){
+      document.getElementById("minhaVez").innerHTML =
+        "<span class='highlight'>🔥 É SUA VEZ HOJE!</span>";
+    } else {
+      document.getElementById("minhaVez").innerText = "Aguardando...";
+    }
+
+    if(!usuarios[usuario]){
+      usuarios[usuario] = { horas: 0 };
+      await update(ref(db, "usuarios"), usuarios);
+    }
+
+    document.getElementById("horas").innerText =
+      "Você assistiu: " + usuarios[usuario].horas + "h";
+  }
+}
+
+// 🔥 RODAR DIA
+window.rodar = async function(){
+
+  const filaSnap = await get(ref(db, "fila"));
+  const usuariosSnap = await get(ref(db, "usuarios"));
+
+  let fila = filaSnap.val() || [];
+  let usuarios = usuariosSnap.val() || {};
+
+  let ativos = fila.slice(0,6);
+
+  ativos.forEach(id=>{
+    if(!usuarios[id]) usuarios[id] = { horas: 0 };
+    usuarios[id].horas += 6;
+  });
+
+  let usados = fila.splice(0,6);
+  fila = fila.concat(usados);
+
+  await set(ref(db, "fila"), fila);
+  await set(ref(db, "usuarios"), usuarios);
+
+  atualizar();
+};
+
+// ADD +10
+window.add10 = async function(){
+
+  const filaSnap = await get(ref(db, "fila"));
+  let fila = filaSnap.val() || [];
+
+  let atual = fila.length;
+
+  for(let i=1;i<=10;i++){
+    fila.push(atual + i);
+  }
+
+  await set(ref(db, "fila"), fila);
+  atualizar();
+};
+
+// RESET
+window.resetarSistema = async function(){
+  if(confirm("Resetar sistema?")){
+    await set(ref(db, "fila"), []);
+    await set(ref(db, "usuarios"), {});
+    sessionStorage.clear();
+    location.reload();
+  }
+};
+
+// 🔥 INICIALIZA
+window.onload = async function(){
+
+  const filaSnap = await get(ref(db, "fila"));
+
+  if(!filaSnap.exists()){
+    let inicial = [];
+    for(let i=1;i<=10;i++) inicial.push(i);
+    await set(ref(db, "fila"), inicial);
+  }
+
+  atualizar();
+};
 
 </script>
 
