@@ -1,4 +1,5 @@
-<!DOCTYPE html>
+
+  <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 
@@ -52,6 +53,33 @@ body{margin:0;font-family:'Montserrat',Arial,Helvetica,sans-serif;background:var
 .card{background:#0f172a;padding:25px;border-radius:12px;margin-top:20px;border:1px solid rgba(255,255,255,0.05)}
 
 .footer{text-align:center;margin:30px;color:#94a3b8;font-size:12px}
+
+/* BOTÃO NOVO */
+.big-btn{
+ display:inline-block;
+ padding:22px 40px;
+ border-radius:14px;
+ background:linear-gradient(45deg, cyan, #00f0ff);
+ border:none;
+ cursor:pointer;
+ box-shadow:0 0 20px cyan;
+ text-align:center;
+}
+
+.big-btn span{
+ display:block;
+ font-weight:700;
+ color:#002b36;
+}
+
+.big-btn .top{
+ font-size:18px;
+}
+
+.big-btn .bottom{
+ font-size:20px;
+ margin-top:4px;
+}
 </style>
 
 </head>
@@ -77,9 +105,10 @@ body{margin:0;font-family:'Montserrat',Arial,Helvetica,sans-serif;background:var
 
 <div style="text-align:center; margin:20px;">
   <a href="cronograma.html">
-    <button style="padding:14px 24px;background:linear-gradient(45deg, cyan, #00f0ff);border:none;border-radius:12px;font-weight:bold;cursor:pointer;box-shadow:0 0 15px cyan;">
-      🚀 Acessar Cronograma
-    </button>
+    <div class="big-btn">
+      <span class="top">LOGIN</span>
+      <span class="bottom">PAINEL DESEMPENHO</span>
+    </div>
   </a>
 </div>
 
@@ -99,14 +128,12 @@ body{margin:0;font-family:'Montserrat',Arial,Helvetica,sans-serif;background:var
 <div class="container">
 <div class="card">
   <h2>📊 Painel do Sistema</h2>
-  <p id="totalUsers">👥 Participantes: ...</p>
-  <p id="totalHoras">⏱️ Horas totais: ...</p>
+  <p id="totalUsers">👥 Participantes: 10</p>
+  <p id="totalHoras">⏱️ Horas totais: 0</p>
 </div>
 </div>
 
-<div class="footer">Privacidade garantida</div>
-
-<!-- VIDEO FINAL -->
+<!-- VIDEO -->
 <div style="max-width:400px; margin:40px auto; text-align:center;">
 
   <p style="color:#94a3b8;">🎥 Vídeo 1: Ensinamento</p>
@@ -125,6 +152,8 @@ body{margin:0;font-family:'Montserrat',Arial,Helvetica,sans-serif;background:var
   </a>
 
 </div>
+
+<div class="footer">Privacidade garantida</div>
 
 <script type="module">
 
