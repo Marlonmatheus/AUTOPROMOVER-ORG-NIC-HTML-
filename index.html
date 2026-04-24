@@ -1,4 +1,4 @@
-divivNTRARNTRAR  <!DOCTYPE html>
+  <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 
@@ -175,27 +175,46 @@ const db = getDatabase(app);
 const usersRef = ref(db, "users");
 const horasRef = ref(db, "horas");
 
-// PARTICIPANTES
-onValue(usersRef, (snapshot) => {
-  if(snapshot.exists()){
-    document.getElementById("totalUsers").innerText =
-      "👥 Participantes: " + snapshot.val();
-  } else {
-    set(usersRef, 10);
-  }
-});
+// 🔹 GARANTE QUE O DOM CARREGOU
+window.addEventListener("DOMContentLoaded", () => {
 
-// HORAS
-onValue(horasRef, (snapshot) => {
-  if(snapshot.exists()){
-    document.getElementById("totalHoras").innerText =
-      "⏱️ Horas totais: " + snapshot.val();
-  } else {
-    set(horasRef, 0);
+  // =========================
+  // 📊 PAINEL FIREBASE
+  // =========================
+
+  onValue(usersRef, (snapshot) => {
+    if(snapshot.exists()){
+      document.getElementById("totalUsers").innerText =
+        "👥 Participantes: " + snapshot.val();
+    } else {
+      set(usersRef, 10);
+    }
+  });
+
+  onValue(horasRef, (snapshot) => {
+    if(snapshot.exists()){
+      document.getElementById("totalHoras").innerText =
+        "⏱️ Horas totais: " + snapshot.val();
+    } else {
+      set(horasRef, 0);
+    }
+  });
+
+  // =========================
+  // 🎥 BOTÃO DO VÍDEO (CORRIGIDO)
+  // =========================
+
+  const btn = document.getElementById("btnVideo");
+
+  if(btn){
+    setTimeout(() => {
+      btn.style.opacity = "1";
+      btn.style.pointerEvents = "auto";
+      btn.innerText = "🚀 ENTRAR APÓS ASSISTIR";
+      btn.href = "https://wa.me/13678903119?text=Acabei%20de%20ver%20o%20vídeo";
+    }, 30000);
   }
+
 });
 
 </script>
-
-</body>
-</html>
