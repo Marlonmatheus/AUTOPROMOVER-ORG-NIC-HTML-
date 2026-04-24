@@ -127,13 +127,46 @@ body{margin:0;font-family:'Montserrat',Arial,Helvetica,sans-serif;background:var
 </div>
 
 <script type="module">
-setTimeout(()=>{
-  const btn = document.getElementById("btnVideo");
-  btn.style.opacity = "1";
-  btn.style.pointerEvents = "auto";
-  btn.innerText = "🚀 Entrar após assistir";
-  btn.href = "https://wa.me/13678903119?text=Acabei%20de%20ver%20o%20vídeo";
-},30000);
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "SUA_API_KEY",
+  authDomain: "cronograma-pro-407b4.firebaseapp.com",
+  databaseURL: "https://cronograma-pro-407b4-default-rtdb.firebaseio.com/",
+  projectId: "cronograma-pro-407b4",
+  storageBucket: "cronograma-pro-407b4.appspot.com",
+  messagingSenderId: "SEU_ID",
+  appId: "SEU_APP_ID"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+const usersRef = ref(db, "users");
+const horasRef = ref(db, "horas");
+
+// PARTICIPANTES
+onValue(usersRef, (snapshot) => {
+  if(snapshot.exists()){
+    document.getElementById("totalUsers").innerText =
+      "👥 Participantes: " + snapshot.val();
+  } else {
+    set(usersRef, 10);
+  }
+});
+
+// HORAS
+onValue(horasRef, (snapshot) => {
+  if(snapshot.exists()){
+    document.getElementById("totalHoras").innerText =
+      "⏱️ Horas totais: " + snapshot.val();
+  } else {
+    set(horasRef, 0);
+  }
+});
+
 </script>
 
 </body>
